@@ -880,7 +880,12 @@ class SQLCompiler:
             klass_info = self.klass_info
             for part in parts:
                 for related_klass_info in klass_info.get('related_klass_infos', []):
-                    if related_klass_info['field'].name == part:
+                    field = related_klass_info['field']
+                    if related_klass_info['reverse']:
+                        if field.unique and field.remote_field.related_name == part:
+                            klass_info = related_klass_info
+                            break
+                    elif field.name == part:
                         klass_info = related_klass_info
                         break
                 else:
